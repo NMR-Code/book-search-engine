@@ -1,53 +1,43 @@
-// Dependencies
-// Express Server
 const express = require('express');
-// Node path
-const path = require('path');
-// Import the Apollo Server
+// import ApolloServer
 const { ApolloServer } = require('apollo-server-express');
-// Import the typeDefs and resolvers
-const { typeDefs, resolvers } = require('./schemas');
 const { authMiddleware } = require('./utils/auth');
-// Database connection
+// import our typeDefs and resolvers
+const { typeDefs, resolvers } = require('./schemas');
+const path = require('path');
 const db = require('./config/connection');
 
-// Set up the Express server
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Set up the Apollo Server and pass in the schema
+// create a new Apollo server and pass in our schema data
 const server = new ApolloServer({
 	typeDefs,
 	resolvers,
 	context: authMiddleware,
 });
 
-// integrate the Apollo server with the Express application as middleware
-async () => {
-	await server.start();
+// integrate our Apollo server with the Express application as middleware
+server.applyMiddleware({ app });
 
-	server.applyMiddleware({ app });
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-	// Express middleware for parsing
-	app.use(express.urlencoded({ extended: false }));
-	app.use(express.json());
+// if we're in production, serve client/build as static assets
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static(path.join(__dirname, '../client/build')));
+}
 
-	// if we're in production, serve client/build as static assets
-	if (process.env.NODE_ENV === 'production') {
-		app.use(express.static(path.join(__dirname, '../client/build')));
-	}
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
 
-	app.get('*', (req, res) => {
-		res.sendFile(path.join(__dirname, '../client/build/index.html'));
+db.once('open', () => {
+	app.listen(PORT, () => {
+		console.log(`API server running on port ${PORT}!`);
+		// log where we can go to test our GQL API
+		console.log(
+			`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`
+		);
 	});
-
-	// GraphQL and Express Server start
-	db.once('open', () => {
-		app.listen(PORT, () => {
-			console.log(`API server running on port ${PORT}!`);
-			console.log(
-				`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`
-			);
-		});
-	});
-};
+});
