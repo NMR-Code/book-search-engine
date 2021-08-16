@@ -9,7 +9,7 @@
     "install": "cd server && npm i && cd ../client && npm i",
     "build": "cd client && npm run build"
   },
-  "author": "Stephen Roddewig (Captain63)",
+  "author": "Nelson Rosado",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^5.1.0"
