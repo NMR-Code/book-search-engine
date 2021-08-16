@@ -1,5 +1,3 @@
-// define the resolvers for the queries and mutations
-
 // import the user model
 const { User } = require('../models');
 // import authentication utility and error

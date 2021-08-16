@@ -1,6 +1,6 @@
 # Book Search Engine
 
-![screenshot](./book-search-screenshot.png)
+![screenshot](./book-search.png)
 
 ## Project Description
 
@@ -21,4 +21,4 @@ This project refactors a Google Books API search engine from a RESTful API to a 
 
 ## Deployed Application
 
-The application is deployed on Heroku at
+The application is deployed on Heroku at [https://nmr-book-search.herokuapp.com/]
